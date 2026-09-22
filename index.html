@@ -244,8 +244,12 @@
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(record)
-      }).then(finish).catch(finish);
-    } catch (e) { finish(); }
+      }).catch(function(){});
+    } catch (e) {}
+    // Fire-and-forget: the write lands whether or not this browser ever sees
+    // the response (Apps Script redirects can hang on some mobile/in-app
+    // browsers). Don't make the visitor wait on a response we never read.
+    setTimeout(finish, 900);
   });
 })();
 </script>
