@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Money Session Seat</title>
+<style>
+  html{color-scheme:light dark}
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  :root{
+    --ink:#1f1e2e; --paper:#fbfbf9; --panel:#ffffff; --line:#e4e2ea;
+    --indigo:#363464; --indigo-soft:#4d4a7d; --teal:#1f9296; --blue:#0072ac;
+    --muted:#6a6878; --danger:#b3432f; --focus:#33b1b6;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f1f0f7; --paper:#201f30; --panel:#2a2840; --line:#413e5c;
+      --indigo:#8f8cc4; --indigo-soft:#a7a4d6; --teal:#33b1b6; --blue:#5bb3e0;
+      --muted:#b0aec2; --danger:#e08b78; --focus:#33b1b6;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#f1f0f7; --paper:#201f30; --panel:#2a2840; --line:#413e5c;
+    --indigo:#8f8cc4; --indigo-soft:#a7a4d6; --teal:#33b1b6; --blue:#5bb3e0;
+    --muted:#b0aec2; --danger:#e08b78; --focus:#33b1b6;
+  }
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:'Karla',Calibri,Trebuchet MS,sans-serif;
+    padding-inline:20px; padding-block:32px;
+    display:flex; justify-content:center;
+  }
+  .wrap{width:100%; max-width:560px; display:flex; flex-direction:column; gap:24px}
+  .eyebrow{
+    font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:13px;
+    letter-spacing:1.5px; text-transform:uppercase; color:var(--teal);
+  }
+  h1{
+    font-family:'Fraunces',Georgia,serif; font-size:clamp(28px,6vw,38px);
+    font-weight:600; line-height:1.15; margin:6px 0 0; text-wrap:balance;
+  }
+  .sub{color:var(--muted); font-size:15.5px; line-height:1.55; margin-top:10px}
+  .facts{
+    display:flex; flex-direction:column; gap:10px; background:var(--panel);
+    border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-top:6px;
+  }
+  .fact{display:flex; gap:12px; font-size:14.5px; line-height:1.4}
+  .fact b{color:var(--ink); font-weight:700; min-width:78px; flex:none}
+  .fact span{color:var(--muted)}
+  form{display:flex; flex-direction:column; gap:20px; margin-top:6px}
+  label{display:flex; flex-direction:column; gap:7px; font-size:14.5px; font-weight:700}
+  label .hint{font-weight:400; color:var(--muted); font-size:13px}
+  input[type=text], select, textarea{
+    font:inherit; font-size:16px; padding:13px 14px; border-radius:10px;
+    border:1.5px solid var(--line); background:var(--paper); color:var(--ink);
+    font-family:inherit;
+  }
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--focus); outline-offset:1px}
+  textarea{resize:vertical; min-height:88px; line-height:1.45}
+  .counter{font-size:12.5px; color:var(--muted); text-align:right; margin-top:-2px}
+  .counter.ok{color:var(--teal)}
+  fieldset{border:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px}
+  legend{font-size:14.5px; font-weight:700; padding:0; margin-bottom:2px}
+  .scale{display:flex; gap:8px}
+  .scale label{
+    flex:1; align-items:center; justify-content:center; text-align:center;
+    border:1.5px solid var(--line); border-radius:10px; padding:12px 4px;
+    cursor:pointer; font-weight:700; font-size:16px; gap:4px;
+  }
+  .scale label span.tick{font-size:10.5px; font-weight:400; color:var(--muted)}
+  .scale input{position:absolute; opacity:0; pointer-events:none}
+  .scale label:has(input:checked){border-color:var(--teal); background:color-mix(in srgb, var(--teal) 14%, var(--panel))}
+  .pledge{
+    display:flex; gap:12px; align-items:flex-start; background:var(--panel);
+    border:1.5px solid var(--line); border-radius:12px; padding:16px 18px; cursor:pointer;
+  }
+  .pledge:has(input:checked){border-color:var(--teal)}
+  .pledge input{width:20px; height:20px; margin-top:2px; accent-color:var(--teal); flex:none}
+  .pledge p{margin:0; font-size:14.5px; font-weight:400; line-height:1.5}
+  button{
+    font:inherit; font-size:16.5px; font-weight:700; padding:15px 20px; border-radius:11px;
+    border:none; background:var(--indigo); color:#fbfbf9; cursor:pointer;
+  }
+  button:disabled{opacity:.45; cursor:not-allowed}
+  button:not(:disabled):active{transform:translateY(1px)}
+  .err{color:var(--danger); font-size:13px; min-height:16px}
+  #done{display:flex; flex-direction:column; gap:14px; align-items:flex-start; text-align:left}
+  #done .badge{
+    width:52px; height:52px; border-radius:50%; background:var(--teal); color:#0d2d2e;
+    display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:700;
+  }
+  #done h2{font-family:'Fraunces',Georgia,serif; font-size:26px; margin:0}
+  #done p{color:var(--muted); font-size:15px; line-height:1.55; margin:0}
+  .foot{font-size:12.5px; color:var(--muted); text-align:center; margin-top:4px}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Karla:wght@400;500;700&display=swap">
+</head>
+<body>
+
+<div class="wrap">
+  <div id="formView">
+    <div class="eyebrow">Vaish Industries — Team Session</div>
+    <h1>Claim your seat: Money That Works</h1>
+    <p class="sub">A working session on getting your personal finances under control, run for the VSA office team. Seats are limited to people who'll actually use it — this two-minute form is how we confirm that.</p>
+
+    <div class="facts">
+      <div class="fact"><b>What</b><span>7 Baby Steps framework, adapted for Indian salaries, EMIs and investments</span></div>
+      <div class="fact"><b>Format</b><span>60–75 min, in person, questions welcome</span></div>
+      <div class="fact"><b>Bring</b><span>Just yourself — no spreadsheet or numbers needed</span></div>
+    </div>
+
+    <form id="qform">
+      <label>Full name
+        <input type="text" id="name" required autocomplete="name" placeholder="As you're known at VSA">
+      </label>
+
+      <label>Department
+        <select id="dept" required>
+          <option value="" disabled selected>Select one</option>
+          <option>Accounts / Finance</option>
+          <option>Admin / HR</option>
+          <option>Production Planning</option>
+          <option>Quality / Inspection</option>
+          <option>Purchase / Stores</option>
+          <option>Dispatch / Sales</option>
+          <option>Other</option>
+        </select>
+      </label>
+
+      <fieldset>
+        <legend>How urgent is sorting your finances out, right now?</legend>
+        <div class="scale" id="urgency">
+          <label><input type="radio" name="urgency" value="1"><div>1<span class="tick" style="display:block">Not really</div></div></label>
+          <label><input type="radio" name="urgency" value="2"><div>2</div></label>
+          <label><input type="radio" name="urgency" value="3"><div>3</div></label>
+          <label><input type="radio" name="urgency" value="4"><div>4</div></label>
+          <label><input type="radio" name="urgency" value="5"><div>5<span class="tick" style="display:block">Very</span></div></label>
+        </div>
+      </fieldset>
+
+      <label>The one money question you most want answered
+        <span class="hint">This is the filter — a real sentence, not "nothing". We'll try to cover it in the session. Take your time: only well-considered answers, where you've spent at least 10 minutes on this form, will be counted for a seat.</span>
+        <textarea id="question" required minlength="15" maxlength="300" placeholder="e.g. Should I close my personal loan first or keep investing in SIPs?"></textarea>
+      </label>
+      <div class="counter" id="qcount">15 characters minimum</div>
+      <p class="hint" id="timeHint" style="margin:-8px 0 0">Time on this form: <span id="timeSpent">0:00</span></p>
+
+      <label class="pledge" for="pledge">
+        <input type="checkbox" id="pledge" required>
+        <p>I'll attend the full session and complete the short recap quiz at the end. If I can't make it, I'll let Ashir know so my seat goes to someone else.</p>
+      </label>
+
+      <div class="err" id="err"></div>
+      <button type="submit" id="submitBtn">Confirm my seat</button>
+    </form>
+    <p class="foot">Your answers go straight to Ashir — nowhere else.</p>
+  </div>
+
+  <div id="done" hidden>
+    <div class="badge">&#10003;</div>
+    <h2>You're on the list.</h2>
+    <p id="doneMsg"></p>
+    <p>Date and time will follow separately. See you there.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwl0fxx6csD2aipxplYaIDay4YZolS53us4mw2J_R10q5Zel9VJZUG7CtiLdKYPn7nFSw/exec';
+  var MIN_SECONDS = 600; // 10 minutes
+
+  var openedAt = Date.now();
+  var timeSpentEl = document.getElementById('timeSpent');
+  setInterval(function(){
+    var s = Math.floor((Date.now() - openedAt) / 1000);
+    var m = Math.floor(s / 60), r = s % 60;
+    timeSpentEl.textContent = m + ':' + (r < 10 ? '0' : '') + r;
+    timeSpentEl.style.color = s >= MIN_SECONDS ? 'var(--teal)' : '';
+  }, 1000);
+
+  var qEl = document.getElementById('question');
+  var qCount = document.getElementById('qcount');
+  qEl.addEventListener('input', function(){
+    var n = qEl.value.trim().length;
+    if (n >= 15) { qCount.textContent = 'Good — ' + n + ' characters'; qCount.classList.add('ok'); }
+    else { qCount.textContent = (15 - n) + ' more characters needed'; qCount.classList.remove('ok'); }
+  });
+
+  var form = document.getElementById('qform');
+  var err = document.getElementById('err');
+  var btn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    err.textContent = '';
+    var name = document.getElementById('name').value.trim();
+    var dept = document.getElementById('dept').value;
+    var urgencyEl = document.querySelector('input[name=urgency]:checked');
+    var question = qEl.value.trim();
+    var pledge = document.getElementById('pledge').checked;
+
+    if (!name || !dept || !urgencyEl || question.length < 15 || !pledge) {
+      err.textContent = 'Please fill in every field, including the money question (15+ characters).';
+      return;
+    }
+
+    var secondsSpent = Math.floor((Date.now() - openedAt) / 1000);
+    if (secondsSpent < MIN_SECONDS) {
+      var mins = (secondsSpent / 60).toFixed(1);
+      var proceed = window.confirm(
+        "You've spent about " + mins + ' minute(s) on this form. We only count seats for well-considered answers (about 10 minutes). ' +
+        'Take another look at your question, or tap OK to submit anyway — it will be flagged as a quick answer.'
+      );
+      if (!proceed) return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Confirming…';
+
+    var record = {
+      sheet: 'signups',
+      name: name,
+      dept: dept,
+      urgency: Number(urgencyEl.value),
+      question: question,
+      pledged: true,
+      submitted_at: new Date().toISOString(),
+      notes: (secondsSpent < MIN_SECONDS ? 'FAST (' : 'ok (') + secondsSpent + 's on form)'
+    };
+
+    function finish(){
+      document.getElementById('formView').hidden = true;
+      var done = document.getElementById('done');
+      done.hidden = false;
+      document.getElementById('doneMsg').textContent = 'Thanks, ' + name.split(' ')[0] + '. Your question — "' + (question.length > 90 ? question.slice(0,90) + '…' : question) + '" — is noted.';
+    }
+
+    try {
+      fetch(ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(record)
+      }).then(finish).catch(finish);
+    } catch (e) { finish(); }
+  });
+})();
+</script>
+</body>
+</html>

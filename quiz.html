@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Baby Steps Recap</title>
+<style>
+  html{color-scheme:light dark}
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  :root{
+    --ink:#1f1e2e; --paper:#fbfbf9; --panel:#ffffff; --line:#e4e2ea;
+    --indigo:#363464; --teal:#1f9296; --blue:#0072ac;
+    --muted:#6a6878; --good:#1f7a4d; --bad:#b3432f; --focus:#33b1b6;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f1f0f7; --paper:#201f30; --panel:#2a2840; --line:#413e5c;
+      --indigo:#8f8cc4; --teal:#33b1b6; --blue:#5bb3e0;
+      --muted:#b0aec2; --good:#4fd18b; --bad:#e08b78; --focus:#33b1b6;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#f1f0f7; --paper:#201f30; --panel:#2a2840; --line:#413e5c;
+    --indigo:#8f8cc4; --teal:#33b1b6; --blue:#5bb3e0;
+    --muted:#b0aec2; --good:#4fd18b; --bad:#e08b78; --focus:#33b1b6;
+  }
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:'Karla',Calibri,Trebuchet MS,sans-serif;
+    padding-inline:20px; padding-block:28px;
+    display:flex; justify-content:center;
+  }
+  .wrap{width:100%; max-width:560px; display:flex; flex-direction:column; gap:20px}
+  .eyebrow{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:var(--teal)}
+  h1{font-family:'Fraunces',Georgia,serif; font-size:clamp(24px,6vw,32px); font-weight:600; line-height:1.15; margin:6px 0 0; text-wrap:balance}
+  .sub{color:var(--muted); font-size:15px; line-height:1.5; margin-top:8px}
+
+  #nameView{display:flex; flex-direction:column; gap:16px}
+  #nameView input{font:inherit; font-size:16px; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line); background:var(--panel); color:var(--ink)}
+  #nameView input:focus{outline:2px solid var(--focus); outline-offset:1px}
+
+  .progress{display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
+  .bar{flex:1; height:6px; border-radius:4px; background:var(--line); overflow:hidden}
+  .bar > i{display:block; height:100%; background:var(--teal); border-radius:4px; transition:width .25s ease}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px 20px; display:flex; flex-direction:column; gap:16px}
+  .qhi{font-size:13.5px; color:var(--muted); line-height:1.5; font-style:normal}
+  .qen{font-size:19px; font-weight:700; line-height:1.35}
+
+  .opt{display:block; width:100%; text-align:left; font:inherit; font-size:15px; padding:14px 16px; border-radius:11px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; line-height:1.4}
+  .opt:not(:disabled):hover{border-color:var(--teal)}
+  .opt.chosen{border-color:var(--indigo); background:color-mix(in srgb, var(--indigo) 10%, var(--paper))}
+  .opt.correct{border-color:var(--good); background:color-mix(in srgb, var(--good) 16%, var(--paper))}
+  .opt.wrong{border-color:var(--bad); background:color-mix(in srgb, var(--bad) 14%, var(--paper))}
+  .opt:disabled{cursor:default}
+  .optHi{display:block; font-size:12.5px; color:var(--muted); margin-top:3px}
+
+  button.next{font:inherit; font-size:16px; font-weight:700; padding:14px 20px; border-radius:11px; border:none; background:var(--indigo); color:#fbfbf9; cursor:pointer}
+  button.next:disabled{opacity:.4; cursor:not-allowed}
+
+  #resultView{display:none; flex-direction:column; gap:18px}
+  .scoreCircle{width:132px; height:132px; border-radius:50%; border:8px solid var(--teal); display:flex; flex-direction:column; align-items:center; justify-content:center; align-self:center; font-family:'Fraunces',Georgia,serif}
+  .scoreCircle b{font-size:40px; line-height:1}
+  .scoreCircle span{font-size:12px; color:var(--muted)}
+  .verdict{text-align:center; font-size:15px; color:var(--muted)}
+  .review{display:flex; flex-direction:column; gap:10px}
+  .rowitem{display:flex; gap:10px; padding:12px 14px; border-radius:10px; background:var(--panel); border:1px solid var(--line); font-size:13.5px; line-height:1.4}
+  .rowitem .mark{flex:none; font-weight:700}
+  .rowitem .mark.ok{color:var(--good)}
+  .rowitem .mark.no{color:var(--bad)}
+  .foot{font-size:12.5px; color:var(--muted); text-align:center}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Karla:wght@400;500;700&display=swap">
+</head>
+<body>
+
+<div class="wrap">
+  <div id="nameView">
+    <div class="eyebrow">Money That Works — Recap</div>
+    <h1>10 quick questions</h1>
+    <p class="sub">Straight from what we just covered. Takes under 3 minutes — this checks what stuck, not what you memorised.</p>
+    <input type="text" id="nameInput" placeholder="Your name" autocomplete="name">
+    <button class="next" id="startBtn" disabled>Start</button>
+  </div>
+
+  <div id="quizView" style="display:none; flex-direction:column; gap:18px">
+    <div class="progress"><span id="qnum">1 / 10</span><div class="bar"><i id="bar" style="width:10%"></i></div></div>
+    <div class="card">
+      <div>
+        <div class="qhi" id="qhi"></div>
+        <div class="qen" id="qen"></div>
+      </div>
+      <div id="opts"></div>
+    </div>
+    <button class="next" id="nextBtn" disabled>Next</button>
+  </div>
+
+  <div id="resultView">
+    <div class="scoreCircle"><b id="scoreNum">0/10</b><span>correct</span></div>
+    <p class="verdict" id="verdict"></p>
+    <div class="review" id="review"></div>
+    <p class="foot">Saved for Ashir — your recap score, not a grade.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var Q = [
+    {en:"What does Baby Step 1 ask you to do?", hi:"बेबी स्टेप 1 में क्या करने को कहा गया है?",
+     opts:[
+       {en:"Pay off the home loan completely", hi:"होम लोन पूरी तरह चुकाना"},
+       {en:"Save a starter emergency fund — you decide the amount", hi:"एक शुरुआती इमरजेंसी फंड बचाना — राशि आप तय करें"},
+       {en:"Invest 15% of income in mutual funds", hi:"आय का 15% म्यूचुअल फंड में निवेश करना"},
+       {en:"Buy term insurance", hi:"टर्म इंश्योरेंस लेना"}
+     ], correct:1},
+    {en:"In Baby Step 2 (Debt Snowball), which one do you attack first?", hi:"बेबी स्टेप 2 (डेट स्नोबॉल) में, सबसे पहले किसे चुकाना है?",
+     opts:[
+       {en:"The one with the highest interest rate", hi:"सबसे ज्यादा ब्याज दर वाला"},
+       {en:"The smallest balance, regardless of interest rate", hi:"सबसे छोटी बकाया राशि वाला, ब्याज दर चाहे जो भी हो"},
+       {en:"The home loan", hi:"होम लोन"},
+       {en:"Whichever the bank calls about first", hi:"जिसके लिए बैंक का कॉल सबसे पहले आए"}
+     ], correct:1},
+    {en:"Baby Step 3's full emergency fund should cover how many months of expenses?", hi:"बेबी स्टेप 3 का पूरा इमरजेंसी फंड कितने महीनों के खर्च को कवर करना चाहिए?",
+     opts:[
+       {en:"3–6 months", hi:"3–6 महीने"},
+       {en:"1 month", hi:"1 महीना"},
+       {en:"24 months", hi:"24 महीने"},
+       {en:"Only 1 week", hi:"सिर्फ 1 हफ्ता"}
+     ], correct:0},
+    {en:"Baby Step 4 says invest what share of household income for retirement?", hi:"बेबी स्टेप 4 के अनुसार रिटायरमेंट के लिए आय का कितना हिस्सा निवेश करें?",
+     opts:[
+       {en:"5%", hi:"5%"},
+       {en:"50%", hi:"50%"},
+       {en:"15% (via EPF, PPF, NPS, mutual funds)", hi:"15% (EPF, PPF, NPS, म्यूचुअल फंड के जरिए)"},
+       {en:"Whatever is left at year-end", hi:"साल के अंत में जो भी बचे"}
+     ], correct:2},
+    {en:"What is Baby Step 5 mainly for?", hi:"बेबी स्टेप 5 मुख्य रूप से किसके लिए है?",
+     opts:[
+       {en:"Children's education fund", hi:"बच्चों की पढ़ाई के लिए फंड"},
+       {en:"Buying a car", hi:"कार खरीदना"},
+       {en:"A foreign holiday", hi:"विदेश यात्रा"},
+       {en:"Paying credit card dues", hi:"क्रेडिट कार्ड का बकाया चुकाना"}
+     ], correct:0},
+    {en:"What's the simple budget split from the \"money leaks\" slide?", hi:"'पैसे के लीक' वाली स्लाइड का आसान बजट बंटवारा क्या है?",
+     opts:[
+       {en:"50% needs, 30% wants, 20% savings & debt", hi:"50% ज़रूरतें, 30% इच्छाएं, 20% बचत व कर्ज"},
+       {en:"90% wants, 10% savings", hi:"90% इच्छाएं, 10% बचत"},
+       {en:"Spend first, save whatever is left", hi:"पहले खर्च करें, जो बचे वो बचाएं"},
+       {en:"100% needs, nothing else", hi:"100% सिर्फ ज़रूरतें"}
+     ], correct:0},
+    {en:"The final Baby Step (Step 6) is about:", hi:"आखिरी बेबी स्टेप (स्टेप 6) किस बारे में है?",
+     opts:[
+       {en:"Taking more loans to grow faster", hi:"तेजी से बढ़ने के लिए और कर्ज लेना"},
+       {en:"Building wealth and giving generously", hi:"संपत्ति बनाना और खुले दिल से दान करना"},
+       {en:"Closing all bank accounts", hi:"सभी बैंक खाते बंद करना"},
+       {en:"Buying only gold and property", hi:"सिर्फ सोना और प्रॉपर्टी खरीदना"}
+     ], correct:1},
+    {en:"Which comes first — paying off all non-home debt, or building the full 3–6 month emergency fund?", hi:"पहले क्या आता है — होम लोन के अलावा सारा कर्ज चुकाना, या 3–6 महीने का पूरा इमरजेंसी फंड बनाना?",
+     opts:[
+       {en:"Pay off all non-home debt (Step 2), then the full fund (Step 3)", hi:"पहले सारा कर्ज चुकाना (स्टेप 2), फिर पूरा फंड (स्टेप 3)"},
+       {en:"The full fund always comes first", hi:"पूरा फंड हमेशा पहले आता है"},
+       {en:"Both happen at the same time, always", hi:"दोनों हमेशा एक साथ होते हैं"},
+       {en:"Order does not matter", hi:"क्रम मायने नहीं रखता"}
+     ], correct:0},
+    {en:"Which of these was flagged as a common India-specific money trap?", hi:"इनमें से किसे भारत में आम पैसे का जाल बताया गया?",
+     opts:[
+       {en:"Paying rent on time", hi:"समय पर किराया देना"},
+       {en:"Treating an insurance policy as an investment product", hi:"बीमा पॉलिसी को निवेश उत्पाद समझना"},
+       {en:"Keeping a savings account", hi:"बचत खाता रखना"},
+       {en:"Reading the bank passbook", hi:"बैंक पासबुक पढ़ना"}
+     ], correct:1},
+    {en:"What is the correct order of the first three Baby Steps?", hi:"पहले तीन बेबी स्टेप्स का सही क्रम क्या है?",
+     opts:[
+       {en:"Full emergency fund → starter fund → pay off debt", hi:"पूरा इमरजेंसी फंड → शुरुआती फंड → कर्ज चुकाना"},
+       {en:"Starter fund (your number) → pay off debt (snowball) → full emergency fund", hi:"शुरुआती फंड (आपका नंबर) → कर्ज चुकाना (स्नोबॉल) → पूरा इमरजेंसी फंड"},
+       {en:"Pay off debt → invest 15% → starter fund", hi:"कर्ज चुकाना → 15% निवेश → शुरुआती फंड"},
+       {en:"Retirement investing → debt → emergency fund", hi:"रिटायरमेंट निवेश → कर्ज → इमरजेंसी फंड"}
+     ], correct:1}
+  ];
+
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwl0fxx6csD2aipxplYaIDay4YZolS53us4mw2J_R10q5Zel9VJZUG7CtiLdKYPn7nFSw/exec';
+  var name = '';
+  var idx = 0;
+  var chosen = new Array(Q.length).fill(-1);
+
+  var nameInput = document.getElementById('nameInput');
+  var startBtn = document.getElementById('startBtn');
+  nameInput.addEventListener('input', function(){ startBtn.disabled = nameInput.value.trim().length < 2; });
+  nameInput.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !startBtn.disabled) startBtn.click(); });
+
+  startBtn.addEventListener('click', function(){
+    name = nameInput.value.trim();
+    document.getElementById('nameView').style.display = 'none';
+    document.getElementById('quizView').style.display = 'flex';
+    renderQuestion();
+  });
+
+  var qhi = document.getElementById('qhi');
+  var qen = document.getElementById('qen');
+  var opts = document.getElementById('opts');
+  var nextBtn = document.getElementById('nextBtn');
+  var qnum = document.getElementById('qnum');
+  var bar = document.getElementById('bar');
+
+  function renderQuestion(){
+    var q = Q[idx];
+    qnum.textContent = (idx+1) + ' / ' + Q.length;
+    bar.style.width = (((idx+1)/Q.length)*100) + '%';
+    qhi.textContent = q.hi;
+    qen.textContent = q.en;
+    opts.innerHTML = '';
+    opts.style.display = 'flex'; opts.style.flexDirection = 'column'; opts.style.gap = '10px';
+    nextBtn.disabled = true;
+    nextBtn.textContent = idx === Q.length - 1 ? 'See my score' : 'Next';
+
+    q.opts.forEach(function(o, i){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      b.innerHTML = o.en + '<span class="optHi">' + o.hi + '</span>';
+      b.addEventListener('click', function(){
+        if (b.disabled) return;
+        chosen[idx] = i;
+        Array.from(opts.children).forEach(function(c, j){
+          c.disabled = true;
+          if (j === q.correct) c.classList.add('correct');
+          else if (j === i) c.classList.add('wrong');
+        });
+        nextBtn.disabled = false;
+      });
+      opts.appendChild(b);
+    });
+  }
+
+  nextBtn.addEventListener('click', function(){
+    if (idx < Q.length - 1) { idx++; renderQuestion(); }
+    else { finish(); }
+  });
+
+  function finish(){
+    document.getElementById('quizView').style.display = 'none';
+    var score = 0;
+    Q.forEach(function(q, i){ if (chosen[i] === q.correct) score++; });
+
+    var resultView = document.getElementById('resultView');
+    resultView.style.display = 'flex';
+    document.getElementById('scoreNum').textContent = score + '/' + Q.length;
+    var verdict = document.getElementById('verdict');
+    verdict.textContent = score >= 9 ? 'Sharp — you’ve got the order down.' :
+      score >= 7 ? 'Solid grasp. Reread the steps you missed below.' :
+      score >= 5 ? 'Halfway there — worth a second look at the deck.' :
+      'Worth revisiting the session slides on this.';
+
+    var review = document.getElementById('review');
+    Q.forEach(function(q, i){
+      var ok = chosen[i] === q.correct;
+      var row = document.createElement('div');
+      row.className = 'rowitem';
+      row.innerHTML = '<span class="mark ' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓' : '✗') + '</span><span>' + q.en + (ok ? '' : ' — correct: ' + q.opts[q.correct].en) + '</span>';
+      review.appendChild(row);
+    });
+
+    try {
+      fetch(ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          sheet: 'quiz_responses',
+          name: name, score: score, total: Q.length,
+          answers: chosen, submitted_at: new Date().toISOString()
+        })
+      }).catch(function(){});
+    } catch (e) {}
+  }
+})();
+</script>
+</body>
+</html>
